@@ -143,18 +143,12 @@ const Game = (function () {
 
     const getCurrentPlayer = () => currentPlayer;
 
-    const playRound = () => {
-        let isPlaced = false;
+    const playRound = (row, col) => {
+        board.placeSymbol(row, col, getCurrentPlayer().symbol);
 
-        while (!isPlaced) {
-            row = Number(prompt("Enter a row: "));
-            col = Number(prompt("Enter a col: "));
-            isPlaced = board.placeSymbol(row, col, getCurrentPlayer().symbol);
-        }
-
-        if (!(board.getBoard().find(row => row.find(cell => cell.getSymbol() === '_')))) {
+        if (!(board.getBoard().find(r => r.find(cell => cell.getSymbol() === '_')))) {
             console.log('It was a tie!');
-            
+
             board.printBoard();
             return true;
         }
@@ -167,22 +161,22 @@ const Game = (function () {
 
         board.printBoard();
 
+        switchCurrentPlayer();
+        console.log(`Player ${getCurrentPlayer().id}'s turn:`);
         return false;
     };
 
     const start = () => {
         board.printBoard();
-
-        while (!gameOver) {
-            gameOver = playRound();
-            switchCurrentPlayer();
-        }
+        console.log("Enter a row and a column number with Game.playRound(row, col)");
+        console.log(`Player ${getCurrentPlayer().id}'s turn:`);
     };
 
+    start();
+
     
-    return { start, test, getCurrentPlayer };
+    return { start, playRound, getCurrentPlayer };
 })();
 
 
-Game.test();
-Game.start();
+// Game.start();
