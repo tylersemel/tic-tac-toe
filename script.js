@@ -23,14 +23,29 @@ const Game = (function () {
         ];
 
         const placePiece = (row, col, piece) => {
-            board[row][col] = piece;
+            
+            if ((row < 0 || row > 2) || (col < 0 || col > 2)) {
+                console.log("Enter a valid row and column.");
+                return false;
+            }
+            if (board[row][col] !== 'X' && board[row][col] !== 'O') {
+                board[row][col] = piece;
+                return true;
+            }
+            return false;
         };
 
         const printBoard = () => {
+            let str = "  0 1 2";
             for (let row = 0; row < 3; row++) {
-                console.log(board[row][0], board[row][1], board[row][2]);
+                str += "\n";
+                str += row + " ";
+                str += board[row][0].toString() + " ";
+                str += board[row][1].toString() + " ";
+                str += board[row][2].toString() + " ";
             }
-        }
+            console.log(str);
+        };
 
         return { board, placePiece, printBoard };
     })();
@@ -39,29 +54,30 @@ const Game = (function () {
         players.push(createPlayer(1));
         players.push(createPlayer(2));
         currentPlayer = players[0];
-        let count = 0;
 
         while (!gameOver) {
             Gameboard.printBoard();
             let row = prompt("Enter a row: ");
             let col = prompt("Enter a col: ");
+            
+            let isPlaced = Gameboard.placePiece(row, col, currentPlayer.symbol);
+            isPlaced = true;
+            while (!isPlaced) {
+                row = prompt("Enter a row: ");
+                col = prompt("Enter a col: ");
+                isPlaced = Gameboard.placePiece(row, col, currentPlayer.symbol);
+            }
 
-            // let coord = createCoord(row, col);
-            Gameboard.placePiece(row, col, currentPlayer.symbol);
-            Gameboard.printBoard();
-
+            console.log(' ');
             gameOver = currentPlayer.checkWin();
 
             if (gameOver) {
+                Gameboard.printBoard();
                 console.log(`Winner is Player ${currentPlayer.id}`);
                 return;
             }
 
             currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
-
-            count++;
-
-            gameOver = count === 5 ? true : false;
         }
     };
 
