@@ -16,6 +16,9 @@ function Gameboard() {
     const cols = 3;
     const board = [];
 
+    const getRows = () => rows;
+    const getCols = () => cols;
+
     const addCells = () => {
         for (let i = 0; i < rows; i++) {
             board[i] = [];
@@ -58,7 +61,7 @@ function Gameboard() {
         console.log(str);
     };
 
-    return { getBoard, placeSymbol, printBoard };
+    return { getBoard, placeSymbol, printBoard, getRows, getCols };
 }
 
 function Cell() {
@@ -96,9 +99,9 @@ const Game = (function () {
     const checkWin = () => {
         let count = 0;
         //check row
-        for (let row = 0; row < board.getBoard().length; row++) {
-            for (let col = 0; col < board.getBoard()[row].length; col++) {
-                if (board.getBoard()[row][col].getSymbol() === currentPlayer.symbol) {
+        for (let row = 0; row < board.getRows(); row++) {
+            for (let col = 0; col < board.getCols(); col++) {
+                if (board.getBoard()[row][col].getSymbol() === getCurrentPlayer().symbol) {
                     count++;
                 }
                 if (count === 3) {
@@ -111,9 +114,9 @@ const Game = (function () {
         }
 
         //check col
-        for (let col = 0; col < board.getBoard()[0].length; col++) {
-            for (let row = 0; row < board.getBoard().length; row++) {
-                if (board.getBoard()[row][col].getSymbol() === currentPlayer.symbol) {
+        for (let col = 0; col < board.getCols(); col++) {
+            for (let row = 0; row < board.getRows(); row++) {
+                if (board.getBoard()[row][col].getSymbol() === getCurrentPlayer().symbol) {
                     count++;
                 }
                 if (count === 3) {
@@ -125,11 +128,11 @@ const Game = (function () {
             count = 0;
         }
 
-        //check diagonal
-        // if ((Game.Gameboard.getBoardPiece(0, 0) === piece && Game.Gameboard.getBoardPiece(1, 1) === piece && Game.Gameboard.getBoardPiece(2, 2) === piece) ||
-        //     (Game.Gameboard.getBoardPiece(0, 2) === piece && Game.Gameboard.getBoardPiece(1, 1) === piece && Game.Gameboard.getBoardPiece(2, 0) === piece)) {
-        //     return true;
-        // }
+        //top left to bottom right diagonal
+        if (board.getBoard()[0][0].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][2].getSymbol() === getCurrentPlayer().symbol ||
+            board.getBoard()[0][2].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][0].getSymbol() === getCurrentPlayer().symbol) {
+            return true;
+        }
 
         return false;
     };
@@ -149,10 +152,18 @@ const Game = (function () {
             isPlaced = board.placeSymbol(row, col, getCurrentPlayer().symbol);
         }
 
-        // if (checkWin()) {
-        //     console.log(`Player ${currentPlayer.id} has won!`);
-        //     return true;
-        // }
+        if (!(board.getBoard().find(row => row.find(cell => cell.getSymbol() === '_')))) {
+            console.log('It was a tie!');
+            
+            board.printBoard();
+            return true;
+        }
+
+        if (checkWin()) {
+            console.log(`Player ${currentPlayer.id} has won!`);
+            board.printBoard();
+            return true;
+        }
 
         board.printBoard();
 
@@ -165,7 +176,6 @@ const Game = (function () {
         while (!gameOver) {
             gameOver = playRound();
             switchCurrentPlayer();
-            gameOver = true;
         }
     };
 
@@ -173,52 +183,6 @@ const Game = (function () {
     return { start, test, getCurrentPlayer };
 })();
 
-function createPlayer(id) {
-    let piece = id === 1 ? 'X' : 'O';
-
-    const checkWin = () => {
-        let count = 0;
-        //check row
-        for (let row = 0; row < 3; row++) {
-            for (let col = 0; col < 3; col++) {
-                if (Game.Gameboard.getBoardPiece(row, col) === piece) {
-                    count++;
-                }
-                if (count === 3) {
-                    return true;
-                }
-
-            }
-
-            count = 0;
-        }
-
-        //check col
-        for (let col = 0; col < 3; col++) {
-            for (let row = 0; row < 3; row++) {
-                if (Game.Gameboard.getBoardPiece(row, col) === piece) {
-                    count++;
-                }
-                if (count === 3) {
-                    return true;
-                }
-
-            }
-
-            count = 0;
-        }
-
-        //check diagonal
-        if ((Game.Gameboard.getBoardPiece(0, 0) === piece && Game.Gameboard.getBoardPiece(1, 1) === piece && Game.Gameboard.getBoardPiece(2, 2) === piece) ||
-            (Game.Gameboard.getBoardPiece(0, 2) === piece && Game.Gameboard.getBoardPiece(1, 1) === piece && Game.Gameboard.getBoardPiece(2, 0) === piece)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    return { id, piece, checkWin };
-}
 
 Game.test();
 Game.start();
