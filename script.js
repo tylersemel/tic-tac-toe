@@ -11,90 +11,166 @@
 
 //i'll place checks later
 
-const Game = (function () {
-    let currentPlayer;
-    let gameOver = false;
-    let players = [];
-    const Gameboard = (function () {
-        const board = [
-            ['_','_','_'],
-            ['_','_','_'],
-            ['_','_','_'],
-        ];
+function Gameboard() {
+    const rows = 3;
+    const cols = 3;
+    const board = [];
 
-        //so other modules cannot modify the board directly
-        const getBoardPiece = (row, col) => {
-            const coord = board[row][col];
-            return coord;
-        }
-
-        const placePiece = (row, col, piece) => {
-            if (row == null || col == null) {
-                return false;
+    const addCells = () => {
+        for (let i = 0; i < rows; i++) {
+            board[i] = [];
+            for (let j = 0; j < cols; j++) {
+                board[i].push(Cell());
             }
-            if ((row < 0 || row > 2) || (col < 0 || col > 2)) {
-                console.log("Enter a valid row and column.");
-                return false;
-            }
-            if (board[row][col] !== 'X' && board[row][col] !== 'O') {
-                board[row][col] = piece;
-                return true;
-            }
-
-            console.log("Enter a valid row and column.");
-            return false;
-        };
-
-        //for debugging
-        const printBoard = () => {
-            let str = "  0 1 2";
-            for (let row = 0; row < 3; row++) {
-                str += "\n";
-                str += row + " ";
-                str += board[row][0] + " ";
-                str += board[row][1] + " ";
-                str += board[row][2] + " ";
-            }
-            console.log(str);
-        };
-
-        return { getBoardPiece, placePiece, printBoard };
-    })();
-
-    const start = () => {
-        players.push(createPlayer(1));
-        players.push(createPlayer(2));
-        currentPlayer = players[0];
-        // gameOver = true;
-
-        while (!gameOver) {
-            Gameboard.printBoard();
-            let row = prompt("Enter a row: ");
-            let col = prompt("Enter a col: ");
-            
-            let isPlaced = Gameboard.placePiece(row, col, currentPlayer.piece);
-
-            while (!isPlaced) {
-                row = prompt("Enter a row: ");
-                col = prompt("Enter a col: ");
-                isPlaced = Gameboard.placePiece(row, col, currentPlayer.piece);
-            }
-
-            console.log(' ');
-            gameOver = currentPlayer.checkWin();
-
-            if (gameOver) {
-                Gameboard.printBoard();
-                console.log(`Winner is Player ${currentPlayer.id}`);
-                return;
-            }
-
-            currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
         }
     };
 
+    addCells();
 
-    return { start, players, Gameboard };
+    const getBoard = () => board;
+
+    const placeSymbol = (row, col, symbol) => {
+        if (row == null || col == null) {
+            return false;
+        }
+        if ((row < 0 || row >= rows) || (col < 0 || col >= cols)) {
+            console.log("Enter a valid row and column.");
+            return false;
+        }
+        if (board[row][col].getSymbol() !== 'X' && board[row][col].getSymbol() !== 'O') {
+            board[row][col].setSymbol(symbol);
+            return true;
+        }
+
+        console.log("Enter a valid row and column.");
+        return false;
+    };
+
+    //for debugging
+    const printBoard = () => {
+        let str = "  0 1 2\n";
+
+        for (let i = 0; i < rows; i++) {
+            str += i.toString() + ' ' + board[i].map(cell => cell.getSymbol()).join(' ')
+            str += '\n';
+        }
+
+        console.log(str);
+    };
+
+    return { getBoard, placeSymbol, printBoard };
+}
+
+function Cell() {
+    let symbol = '_';
+
+    const setSymbol = (val) => symbol = val;
+    const getSymbol = () => symbol;
+
+    return { setSymbol, getSymbol };
+}
+
+const Game = (function () {
+    let players = [
+        {   id: 1,
+            symbol: 'X'
+        },
+        {
+            id: 2,
+            symbol: 'O'
+        },
+    ];
+    let currentPlayer = players[0];
+    const board = Gameboard();
+    let gameOver = false;
+
+    const test = () => {
+        console.log(board.getBoard()[0][0] instanceof Cell);
+        let cell = Cell();
+
+        cell.setSymbol('Y');
+
+        console.log(cell.getSymbol());
+    }
+
+    const checkWin = () => {
+        let count = 0;
+        //check row
+        for (let row = 0; row < board.getBoard().length; row++) {
+            for (let col = 0; col < board.getBoard()[row].length; col++) {
+                if (board.getBoard()[row][col].getSymbol() === currentPlayer.symbol) {
+                    count++;
+                }
+                if (count === 3) {
+                    return true;
+                }
+
+            }
+
+            count = 0;
+        }
+
+        //check col
+        for (let col = 0; col < board.getBoard()[0].length; col++) {
+            for (let row = 0; row < board.getBoard().length; row++) {
+                if (board.getBoard()[row][col].getSymbol() === currentPlayer.symbol) {
+                    count++;
+                }
+                if (count === 3) {
+                    return true;
+                }
+
+            }
+
+            count = 0;
+        }
+
+        //check diagonal
+        // if ((Game.Gameboard.getBoardPiece(0, 0) === piece && Game.Gameboard.getBoardPiece(1, 1) === piece && Game.Gameboard.getBoardPiece(2, 2) === piece) ||
+        //     (Game.Gameboard.getBoardPiece(0, 2) === piece && Game.Gameboard.getBoardPiece(1, 1) === piece && Game.Gameboard.getBoardPiece(2, 0) === piece)) {
+        //     return true;
+        // }
+
+        return false;
+    };
+
+    const switchCurrentPlayer = () => {
+        currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
+    };
+
+    const getCurrentPlayer = () => currentPlayer;
+
+    const playRound = () => {
+        let isPlaced = false;
+
+        while (!isPlaced) {
+            row = Number(prompt("Enter a row: "));
+            col = Number(prompt("Enter a col: "));
+            isPlaced = board.placeSymbol(row, col, getCurrentPlayer().symbol);
+        }
+
+        // if (checkWin()) {
+        //     console.log(`Player ${currentPlayer.id} has won!`);
+        //     return true;
+        // }
+
+        board.printBoard();
+
+        return false;
+    };
+
+    const start = () => {
+        board.printBoard();
+
+        while (!gameOver) {
+            gameOver = playRound();
+            switchCurrentPlayer();
+            gameOver = true;
+        }
+    };
+
+    
+    return { start, test, getCurrentPlayer };
 })();
 
 function createPlayer(id) {
@@ -144,4 +220,5 @@ function createPlayer(id) {
     return { id, piece, checkWin };
 }
 
+Game.test();
 Game.start();
