@@ -18,12 +18,20 @@ const Game = (function () {
     const Gameboard = (function () {
         const board = [
             ['_','_','_'],
-            ['_','-','_'],
+            ['_','_','_'],
             ['_','_','_'],
         ];
 
+        //so other modules cannot modify the board directly
+        const getBoardPiece = (row, col) => {
+            const coord = board[row][col];
+            return coord;
+        }
+
         const placePiece = (row, col, piece) => {
-            
+            if (row == null || col == null) {
+                return false;
+            }
             if ((row < 0 || row > 2) || (col < 0 || col > 2)) {
                 console.log("Enter a valid row and column.");
                 return false;
@@ -32,40 +40,44 @@ const Game = (function () {
                 board[row][col] = piece;
                 return true;
             }
+
+            console.log("Enter a valid row and column.");
             return false;
         };
 
+        //for debugging
         const printBoard = () => {
             let str = "  0 1 2";
             for (let row = 0; row < 3; row++) {
                 str += "\n";
                 str += row + " ";
-                str += board[row][0].toString() + " ";
-                str += board[row][1].toString() + " ";
-                str += board[row][2].toString() + " ";
+                str += board[row][0] + " ";
+                str += board[row][1] + " ";
+                str += board[row][2] + " ";
             }
             console.log(str);
         };
 
-        return { board, placePiece, printBoard };
+        return { getBoardPiece, placePiece, printBoard };
     })();
 
     const start = () => {
         players.push(createPlayer(1));
         players.push(createPlayer(2));
         currentPlayer = players[0];
+        // gameOver = true;
 
         while (!gameOver) {
             Gameboard.printBoard();
             let row = prompt("Enter a row: ");
             let col = prompt("Enter a col: ");
             
-            let isPlaced = Gameboard.placePiece(row, col, currentPlayer.symbol);
-            isPlaced = true;
+            let isPlaced = Gameboard.placePiece(row, col, currentPlayer.piece);
+
             while (!isPlaced) {
                 row = prompt("Enter a row: ");
                 col = prompt("Enter a col: ");
-                isPlaced = Gameboard.placePiece(row, col, currentPlayer.symbol);
+                isPlaced = Gameboard.placePiece(row, col, currentPlayer.piece);
             }
 
             console.log(' ');
@@ -85,32 +97,15 @@ const Game = (function () {
     return { start, players, Gameboard };
 })();
 
-function createCoord(row, col) {
-    return { row, col };
-}
-
-// function createPlayer(id) {
-//     const moves = [];
-
-//     const getMoves = () => {
-//         return moves;
-//     };
-
-//     const placeMove = (coord) => {
-//         moves.push(coord);
-//     }
-
-//     return { getMoves };
-// }
-
 function createPlayer(id) {
-    let symbol = id === 1 ? 'X' : 'O';
+    let piece = id === 1 ? 'X' : 'O';
+
     const checkWin = () => {
         let count = 0;
         //check row
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
-                if (Game.Gameboard.board[row][col] === symbol) {
+                if (Game.Gameboard.getBoardPiece(row, col) === piece) {
                     count++;
                 }
                 if (count === 3) {
@@ -125,7 +120,7 @@ function createPlayer(id) {
         //check col
         for (let col = 0; col < 3; col++) {
             for (let row = 0; row < 3; row++) {
-                if (Game.Gameboard.board[row][col] === symbol) {
+                if (Game.Gameboard.getBoardPiece(row, col) === piece) {
                     count++;
                 }
                 if (count === 3) {
@@ -138,15 +133,15 @@ function createPlayer(id) {
         }
 
         //check diagonal
-        if ((Game.Gameboard.board[0][0] === symbol && Game.Gameboard.board[1][1] === symbol && Game.Gameboard.board[2][2] === symbol) ||
-            (Game.Gameboard.board[0][2] === symbol && Game.Gameboard.board[1][1] === symbol && Game.Gameboard.board[2][0] === symbol)) {
+        if ((Game.Gameboard.getBoardPiece(0, 0) === piece && Game.Gameboard.getBoardPiece(1, 1) === piece && Game.Gameboard.getBoardPiece(2, 2) === piece) ||
+            (Game.Gameboard.getBoardPiece(0, 2) === piece && Game.Gameboard.getBoardPiece(1, 1) === piece && Game.Gameboard.getBoardPiece(2, 0) === piece)) {
             return true;
         }
 
         return false;
     }
 
-    return { id, symbol, checkWin };
+    return { id, piece, checkWin };
 }
 
 Game.start();
