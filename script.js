@@ -81,7 +81,7 @@ function Player(id, symbol) {
     return { id, symbol, setName, getName }
 }
 
-const Game = (function () {
+function Game() {
     let players = [
         // {   id: 1,
         //     symbol: 'X'
@@ -95,7 +95,6 @@ const Game = (function () {
     ];
     let currentPlayer = players[0];
     const board = Gameboard();
-    const display = Display();
 
     const test = () => {
         console.log(board.getBoard()[0][0] instanceof Cell);
@@ -182,20 +181,20 @@ const Game = (function () {
         board.printBoard();
         console.log("Enter a row and a column number with Game.playRound(row, col)");
         console.log(`Player ${getCurrentPlayer().id}'s turn:`);
-        display.renderGameboard(board);
     };
 
     start();
 
     
-    return { start, playRound, getCurrentPlayer };
-})();
+    return { board, playRound, getCurrentPlayer };
+}
 
 
-function Display() {
+const Display = (function() {
     const cellDivs = document.querySelectorAll('.cell');
     const turnDiv = document.querySelector('.turn');
-
+    const nameDiv = turnDiv.querySelector('.name');
+    const game = Game();
 
     const addEvents = () => {
         for (const cell of cellDivs) {
@@ -205,11 +204,17 @@ function Display() {
 
     addEvents();
 
-    function clickCell() {
-        console.log("clicked a cell");
+    function clickCell(event) {
+        console.log("clicked a cell " + event.target.getAttribute('data-row'));
+        const row = parseInt(event.target.getAttribute('data-row'));
+        const col = parseInt(event.target.getAttribute('data-col'));
+        game.playRound(row, col);
+        renderGameboard(game.board);
     }
 
     const renderGameboard = (board) => {
+
+        renderTurn(game.getCurrentPlayer());
         // console.log(cellDivs.length)
         console.log("will display gameboard array");
         //not good
@@ -223,14 +228,15 @@ function Display() {
     };
 
     const renderTurn = (currentPlayer) => {
-        const nameDiv = turnDiv.querySelector('.name');
-        nameDiv.textContent = currentPlayer.id;
+        nameDiv.textContent = `Player ${currentPlayer.id}`
     };
 
     const addSymbol = () => {
 
     };
 
+    renderGameboard(game.board);
+
     return { renderGameboard, renderTurn };
     
-}
+})();
