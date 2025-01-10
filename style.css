@@ -1,3 +1,12 @@
+@font-face {
+    font-family: 'geometry_soft_probold_n';
+    src: url('./fonts/geometry_soft_pro-bold_n-webfont.woff2') format('woff2'),
+         url('./fonts/geometry_soft_pro-bold_n-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 /* 1. Use a more-intuitive box-sizing model */
 *, *::before, *::after {
     box-sizing: border-box;
@@ -16,7 +25,7 @@ body {
     -webkit-font-smoothing: antialiased;
 
     background-color: rgb(165, 212, 230);
-    font-family: "Roboto";
+    font-family: "geometry_soft_probold_n","Roboto";
     min-height: 100vh;
 }
 
@@ -50,3 +59,67 @@ h1, h2, h3, h4, h5, h6 {
 #root, #__next {
     isolation: isolate;
 }
+
+:root {
+    --background-color: rgb(227, 249, 255);
+    --game-hover-color: rgb(235, 245, 247);
+    --current-player: 'X';
+}
+
+main .game-container {
+    display: grid;
+
+    grid-template-columns: 150px 20px 150px 20px 150px;
+    grid-template-rows: 150px 20px 150px 20px 150px;
+
+    justify-self: center;
+    align-self: center;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+main .game-container div {
+    /* background-color: rgb(99, 115, 186); */
+    display: flex;
+    /* text-align: center; */
+    align-items: center;
+    justify-content: center;
+}
+
+main .game-container .border {
+    background-color: rgb(33, 33, 33);
+}
+
+main .game-container .cell {
+    background-color: rgb(227, 249, 255);
+    border-radius: 3px;
+    margin: 15px;
+    font-size: 100px;
+}
+
+main .game-container .cell:hover {
+    background-color: rgb(204, 232, 238);
+    cursor: pointer;
+}
+
+main .game-container .left {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+main .game-container .right {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+main .game-container .top {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+main .game-container .bottom {
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+

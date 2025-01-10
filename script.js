@@ -65,7 +65,7 @@ function Gameboard() {
 }
 
 function Cell() {
-    let symbol = '_';
+    let symbol = '';
 
     const setSymbol = (val) => symbol = val;
     const getSymbol = () => symbol;
@@ -73,19 +73,29 @@ function Cell() {
     return { setSymbol, getSymbol };
 }
 
+function Player(id, symbol) {
+    let name = 'None';
+    const setName = (player) => name = player;
+    const getName = () => name;
+
+    return { id, symbol, setName, getName }
+}
+
 const Game = (function () {
     let players = [
-        {   id: 1,
-            symbol: 'X'
-        },
-        {
-            id: 2,
-            symbol: 'O'
-        },
+        // {   id: 1,
+        //     symbol: 'X'
+        // },
+        // {
+        //     id: 2,
+        //     symbol: 'O'
+        // },
+        Player(1, 'X'),
+        Player(2, 'O')
     ];
     let currentPlayer = players[0];
     const board = Gameboard();
-    let gameOver = false;
+    const display = Display();
 
     const test = () => {
         console.log(board.getBoard()[0][0] instanceof Cell);
@@ -148,7 +158,7 @@ const Game = (function () {
             return false;
         }
 
-        if (!(board.getBoard().find(r => r.find(cell => cell.getSymbol() === '_')))) {
+        if (!(board.getBoard().find(r => r.find(cell => cell.getSymbol() === '')))) {
             console.log('It was a tie!');
 
             board.printBoard();
@@ -172,6 +182,7 @@ const Game = (function () {
         board.printBoard();
         console.log("Enter a row and a column number with Game.playRound(row, col)");
         console.log(`Player ${getCurrentPlayer().id}'s turn:`);
+        display.renderGameboard(board);
     };
 
     start();
@@ -181,7 +192,45 @@ const Game = (function () {
 })();
 
 
-function GameRenderer() {
+function Display() {
+    const cellDivs = document.querySelectorAll('.cell');
+    const turnDiv = document.querySelector('.turn');
 
+
+    const addEvents = () => {
+        for (const cell of cellDivs) {
+            cell.addEventListener('click', clickCell);
+        }
+    };
+
+    addEvents();
+
+    function clickCell() {
+        console.log("clicked a cell");
+    }
+
+    const renderGameboard = (board) => {
+        // console.log(cellDivs.length)
+        console.log("will display gameboard array");
+        //not good
+        let count = 0;
+        for (let i = 0; i < board.getRows(); i++) {
+            for (let j = 0; j < board.getCols(); j++) {
+                cellDivs[count].textContent = board.getBoard()[i][j].getSymbol();
+                count++;
+            }
+        }
+    };
+
+    const renderTurn = (currentPlayer) => {
+        const nameDiv = turnDiv.querySelector('.name');
+        nameDiv.textContent = currentPlayer.id;
+    };
+
+    const addSymbol = () => {
+
+    };
+
+    return { renderGameboard, renderTurn };
     
 }
