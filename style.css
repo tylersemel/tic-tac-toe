@@ -15,7 +15,7 @@ body {
     /* 4. Improve text rendering */
     -webkit-font-smoothing: antialiased;
 
-    background-color: purple;
+    background-color: rgb(165, 212, 230);
     font-family: "Roboto";
     min-height: 100vh;
 }

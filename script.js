@@ -144,7 +144,9 @@ const Game = (function () {
     const getCurrentPlayer = () => currentPlayer;
 
     const playRound = (row, col) => {
-        board.placeSymbol(row, col, getCurrentPlayer().symbol);
+        if (!board.placeSymbol(row, col, getCurrentPlayer().symbol)) {
+            return false;
+        }
 
         if (!(board.getBoard().find(r => r.find(cell => cell.getSymbol() === '_')))) {
             console.log('It was a tie!');
@@ -179,4 +181,7 @@ const Game = (function () {
 })();
 
 
-// Game.start();
+function GameRenderer() {
+
+    
+}
