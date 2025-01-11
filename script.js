@@ -83,13 +83,6 @@ function Player(id, symbol) {
 
 function Game() {
     let players = [
-        // {   id: 1,
-        //     symbol: 'X'
-        // },
-        // {
-        //     id: 2,
-        //     symbol: 'O'
-        // },
         Player(1, 'X'),
         Player(2, 'O')
     ];
@@ -204,11 +197,19 @@ const Display = (function() {
 
     addEvents();
 
+    function removeEvents() {
+        for (const cell of cellDivs) {
+            cell.removeEventListener('click', clickCell);
+        }
+    }
+
     function clickCell(event) {
         console.log("clicked a cell " + event.target.getAttribute('data-row'));
         const row = parseInt(event.target.getAttribute('data-row'));
         const col = parseInt(event.target.getAttribute('data-col'));
-        game.playRound(row, col);
+        if (game.playRound(row, col)) {
+            removeEvents();
+        }
         renderGameboard(game.board);
     }
 
