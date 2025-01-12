@@ -54,7 +54,7 @@ function Gameboard() {
         let str = "  0 1 2\n";
 
         for (let i = 0; i < rows; i++) {
-            str += i.toString() + ' ' + board[i].map(cell => cell.getSymbol()).join(' ')
+            str += i.toString() + ' ' + board[i].map(cell => cell.getSymbol()).join(' ');
             str += '\n';
         }
 
@@ -88,55 +88,76 @@ function Game() {
     ];
     let currentPlayer = players[0];
     const board = Gameboard();
+    let winningCells = [];
 
-    const test = () => {
-        console.log(board.getBoard()[0][0] instanceof Cell);
-        let cell = Cell();
-
-        cell.setSymbol('Y');
-
-        console.log(cell.getSymbol());
+    const setWinningCells = (cells) => {
+        for (let i = 0; i < cells.length; i++) {
+            winningCells[i] = cells[i];
+        }
     }
 
-    const checkWin = () => {
+    const getWinningCells = () => winningCells;
+
+    const checkStraight = (direction) => {
+        let outerLength = board.getRows();
+        let innerLength = board.getCols();
+        
+        if (direction === 'vertical') {
+            outerLength = board.getCols();
+            innerLength = board.getRows();
+        }
+
         let count = 0;
-        //check row
-        for (let row = 0; row < board.getRows(); row++) {
-            for (let col = 0; col < board.getCols(); col++) {
-                if (board.getBoard()[row][col].getSymbol() === getCurrentPlayer().symbol) {
+        let cells = [];
+        
+        for (let i = 0; i < outerLength; i++) {
+            for (let j = 0; j < innerLength; j++) {
+                if (board.getBoard()[i][j].getSymbol() === getCurrentPlayer().symbol) {
+                    cells[count] = board.getBoard()[i][j];
                     count++;
                 }
                 if (count === 3) {
+                    setWinningCells(cells);
                     return true;
                 }
 
             }
 
             count = 0;
-        }
-
-        //check col
-        for (let col = 0; col < board.getCols(); col++) {
-            for (let row = 0; row < board.getRows(); row++) {
-                if (board.getBoard()[row][col].getSymbol() === getCurrentPlayer().symbol) {
-                    count++;
-                }
-                if (count === 3) {
-                    return true;
-                }
-
-            }
-
-            count = 0;
-        }
-
-        //top left to bottom right diagonal
-        if (board.getBoard()[0][0].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][2].getSymbol() === getCurrentPlayer().symbol ||
-            board.getBoard()[0][2].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][0].getSymbol() === getCurrentPlayer().symbol) {
-            return true;
         }
 
         return false;
+    };
+
+    const checkDiagonal = () => {
+        let cells = [];
+        if (board.getBoard()[0][0].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][2].getSymbol() === getCurrentPlayer().symbol) {
+            cells[0] = board.getBoard()[0][0];
+            cells[1] = board.getBoard()[1][1];
+            cells[2] = board.getBoard()[2][2];
+            setWinningCells(cells);
+            return true;
+        }
+        else if (board.getBoard()[0][2].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][0].getSymbol() === getCurrentPlayer().symbol) {
+            cells[0] = board.getBoard()[0][2];
+            cells[1] = board.getBoard()[1][1];
+            cells[2] = board.getBoard()[2][0];
+            setWinningCells(cells);
+            return true;
+        }
+        
+        return false;
+    }
+
+    const checkWin = () => {
+        if (checkStraight('horizontal')) {
+            return true;
+        }
+        else if (checkStraight('vertical')) {
+            return true;
+        }
+        
+        return checkDiagonal();
     };
 
     const switchCurrentPlayer = () => {
@@ -145,6 +166,13 @@ function Game() {
 
     const getCurrentPlayer = () => currentPlayer;
 
+    /**
+     * Plays a round of Tic Tac Toe.
+     * 
+     * @param {number} row - The row to place the symbol in the board array.
+     * @param {number} col - The column to place the symbol in the board array.
+     * @returns {boolean} True if the game is over (tie or win) and false if not.
+     */
     const playRound = (row, col) => {
         if (!board.placeSymbol(row, col, getCurrentPlayer().symbol)) {
             return false;
@@ -178,8 +206,7 @@ function Game() {
 
     start();
 
-    
-    return { board, playRound, getCurrentPlayer };
+    return { board, playRound, getCurrentPlayer, getWinningCells };
 }
 
 
@@ -232,9 +259,13 @@ const Display = (function() {
         nameDiv.textContent = `Player ${currentPlayer.id}`
     };
 
-    const addSymbol = () => {
+    const removeCellHover = () => {
 
     };
+
+    const addWinLine = () => {
+        //so 3 types of line
+    }
 
     renderGameboard(game.board);
 

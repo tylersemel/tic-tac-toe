@@ -66,6 +66,39 @@ h1, h2, h3, h4, h5, h6 {
     --current-player: 'X';
 }
 
+main {
+    display: flex;
+    justify-content: center;
+}
+
+main .position-container {
+    position: relative;
+}
+
+main .position-container .win {
+    position: absolute;
+    display: inline-block;
+    width: 30px;
+    height: 560px;
+    background-color: rgb(219, 0, 0);
+    border-radius: 50px;
+    top: -20px;
+    left: 240px;
+    transform: rotate(-45deg);
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    visibility: hidden;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    20% { opacity: 0; }
+    40% { opacity: 0.3; }
+    60% { opacity: 0.5; }
+    80% { opacity: 0.9; }
+    100% { opacity: 1; }
+}
+
 main .game-container {
     display: grid;
 
