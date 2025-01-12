@@ -79,15 +79,31 @@ main .position-container .win {
     position: absolute;
     display: inline-block;
     width: 30px;
-    height: 560px;
     background-color: rgb(219, 0, 0);
     border-radius: 50px;
+    animation-name: fadeIn;
+    animation-duration: 2s;
+    visibility: hidden;
+}
+
+main .position-container .diagonal {
+    height: 560px;
     top: -20px;
     left: 240px;
     transform: rotate(-45deg);
-    animation-name: fadeIn;
-    animation-duration: 1s;
-    visibility: hidden;
+}
+
+main .position-container .vertical {
+    height: 450px;
+    top: 30px;
+    left: 240px;
+}
+
+main .position-container .horizontal {
+    height: 450px;
+    top: 30px;
+    left: 240px;
+    transform: rotate(90deg);
 }
 
 @keyframes fadeIn {

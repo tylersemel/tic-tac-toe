@@ -81,6 +81,10 @@ function Player(id, symbol) {
     return { id, symbol, setName, getName }
 }
 
+function Win(type, row, col) {
+    return { type, row, col }
+}
+
 function Game() {
     let players = [
         Player(1, 'X'),
@@ -88,15 +92,15 @@ function Game() {
     ];
     let currentPlayer = players[0];
     const board = Gameboard();
-    let winningCells = [];
+    let win;
 
-    const setWinningCells = (cells) => {
-        for (let i = 0; i < cells.length; i++) {
-            winningCells[i] = cells[i];
-        }
+    //if horizontal only need to know row
+    //if diagonal need to know start left side row and col
+    const setWin = (type, row, col) => {
+        win = Win(type, row, col);
     }
 
-    const getWinningCells = () => winningCells;
+    const getWin = () => win;
 
     const checkStraight = (direction) => {
         let outerLength = board.getRows();
@@ -108,16 +112,27 @@ function Game() {
         }
 
         let count = 0;
-        let cells = [];
         
         for (let i = 0; i < outerLength; i++) {
             for (let j = 0; j < innerLength; j++) {
-                if (board.getBoard()[i][j].getSymbol() === getCurrentPlayer().symbol) {
-                    cells[count] = board.getBoard()[i][j];
-                    count++;
+                if (direction === 'horizontal') {
+                    if (board.getBoard()[i][j].getSymbol() === getCurrentPlayer().symbol) {
+                        count++;
+                    }
                 }
+                else {
+                    if (board.getBoard()[j][i].getSymbol() === getCurrentPlayer().symbol) {
+                        count++;
+                    }
+                }
+                
                 if (count === 3) {
-                    setWinningCells(cells);
+                    if (direction === 'horizontal') {
+                        setWin(direction, i, -1);
+                    }
+                    else {
+                        setWin(direction, -1, i);
+                    }
                     return true;
                 }
 
@@ -130,19 +145,12 @@ function Game() {
     };
 
     const checkDiagonal = () => {
-        let cells = [];
         if (board.getBoard()[0][0].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][2].getSymbol() === getCurrentPlayer().symbol) {
-            cells[0] = board.getBoard()[0][0];
-            cells[1] = board.getBoard()[1][1];
-            cells[2] = board.getBoard()[2][2];
-            setWinningCells(cells);
+            setWin('diagonal', 0, 0);
             return true;
         }
         else if (board.getBoard()[0][2].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][0].getSymbol() === getCurrentPlayer().symbol) {
-            cells[0] = board.getBoard()[0][2];
-            cells[1] = board.getBoard()[1][1];
-            cells[2] = board.getBoard()[2][0];
-            setWinningCells(cells);
+            setWin('diagonal', 2, 0);
             return true;
         }
         
@@ -180,7 +188,7 @@ function Game() {
 
         if (!(board.getBoard().find(r => r.find(cell => cell.getSymbol() === '')))) {
             console.log('It was a tie!');
-
+            setWin('tie', -1, -1);
             board.printBoard();
             return true;
         }
@@ -206,7 +214,7 @@ function Game() {
 
     start();
 
-    return { board, playRound, getCurrentPlayer, getWinningCells };
+    return { board, playRound, getCurrentPlayer, getWin };
 }
 
 
@@ -236,6 +244,7 @@ const Display = (function() {
         const col = parseInt(event.target.getAttribute('data-col'));
         if (game.playRound(row, col)) {
             removeEvents();
+            addWinLine();
         }
         renderGameboard(game.board);
     }
@@ -264,11 +273,65 @@ const Display = (function() {
     };
 
     const addWinLine = () => {
+        const diagWinLineDiv = document.querySelector('.diagonal');
+        const vertWinLineDiv = document.querySelector('.vertical');
+        const horWinLineDiv = document.querySelector('.horizontal');
+
+        const topLeftDiagonalDeg = 'rotate(-45deg)';
+        const botLeftDiagonalDeg = 'rotate(45deg)';
+
+        const verticalLeftLeft = '70px';
+        const verticalMiddleLeft = '240px';
+        const verticalRightLeft = '410px';
+
+        const horTopTop = '-140px';
+        const horMiddleTop = '30px';
+        const horBotTop = '200px';
+
         //so 3 types of line
+        if (game.getWin().type === 'horizontal') {
+            if (game.getWin().row === 0) {
+                horWinLineDiv.style.top = horTopTop;
+            }
+            else if (game.getWin().row === 1) {
+                horWinLineDiv.style.top = horMiddleTop;
+            }
+            else {
+                horWinLineDiv.style.top = horBotTop;
+            }
+
+            horWinLineDiv.style.visibility = 'visible';
+        }
+        else if (game.getWin().type === 'vertical') {
+            if (game.getWin().col === 0) {
+                vertWinLineDiv.style.left = verticalLeftLeft;
+            }
+            else if (game.getWin().col === 1) {
+                vertWinLineDiv.style.left = verticalMiddleLeft;
+            }
+            else {
+                vertWinLineDiv.style.left = verticalRightLeft;
+            }
+
+            vertWinLineDiv.style.visibility = 'visible';
+        }
+        else if (game.getWin().type === 'diagonal') {
+            if (game.getWin().row === 0) {
+                diagWinLineDiv.style.transform = topLeftDiagonalDeg;
+            }
+            else {
+                diagWinLineDiv.style.transform = botLeftDiagonalDeg;
+            }
+
+            diagWinLineDiv.style.visibility = 'visible';
+        }
+        else {
+            //tie
+        }
     }
 
     renderGameboard(game.board);
 
-    return { renderGameboard, renderTurn };
+    return { game, renderGameboard, renderTurn };
     
 })();
