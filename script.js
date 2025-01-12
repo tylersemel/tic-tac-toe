@@ -340,7 +340,10 @@ const Display = (function() {
             setDiagonalLine();
         }
         else {
-            //tie
+            const tie = document.querySelector('.tie');
+
+            tie.style.visibility = 'visible';
+            
         }
     }
 
