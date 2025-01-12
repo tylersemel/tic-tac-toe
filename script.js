@@ -290,6 +290,7 @@ const Display = (function() {
         }
 
         horWinLineDiv.style.visibility = 'visible';
+        horWinLineDiv.style.animation = 'fadeIn 0.5s';
     };
 
     const setVerticalLine = () => {
@@ -310,6 +311,7 @@ const Display = (function() {
         }
 
         vertWinLineDiv.style.visibility = 'visible';
+        vertWinLineDiv.style.animation = 'fadeIn 0.5s';
     };
 
     const setDiagonalLine = () => {
@@ -326,6 +328,7 @@ const Display = (function() {
         }
 
         diagWinLineDiv.style.visibility = 'visible';
+        diagWinLineDiv.style.animation = 'fadeIn 0.5s';
     }
 
     const addWinLine = () => {

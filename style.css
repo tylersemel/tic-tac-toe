@@ -81,8 +81,6 @@ main .position-container .win {
     width: 30px;
     background-color: rgb(219, 0, 0);
     border-radius: 50px;
-    animation-name: fadeIn;
-    animation-duration: 2s;
     visibility: hidden;
 }
 
