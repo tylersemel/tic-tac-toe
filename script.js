@@ -125,7 +125,7 @@ function Game() {
                         count++;
                     }
                 }
-                
+
                 if (count === 3) {
                     if (direction === 'horizontal') {
                         setWin(direction, i, -1);
@@ -272,58 +272,72 @@ const Display = (function() {
 
     };
 
-    const addWinLine = () => {
-        const diagWinLineDiv = document.querySelector('.diagonal');
-        const vertWinLineDiv = document.querySelector('.vertical');
+    const setHorizontalLine = () => {
         const horWinLineDiv = document.querySelector('.horizontal');
+        
+        const horTopTop = '-140px';
+        const horMiddleTop = '30px';
+        const horBotTop = '200px';
 
-        const topLeftDiagonalDeg = 'rotate(-45deg)';
-        const botLeftDiagonalDeg = 'rotate(45deg)';
+        if (game.getWin().row === 0) {
+            horWinLineDiv.style.top = horTopTop;
+        }
+        else if (game.getWin().row === 1) {
+            horWinLineDiv.style.top = horMiddleTop;
+        }
+        else {
+            horWinLineDiv.style.top = horBotTop;
+        }
+
+        horWinLineDiv.style.visibility = 'visible';
+    };
+
+    const setVerticalLine = () => {
+        const vertWinLineDiv = document.querySelector('.vertical');
 
         const verticalLeftLeft = '70px';
         const verticalMiddleLeft = '240px';
         const verticalRightLeft = '410px';
 
-        const horTopTop = '-140px';
-        const horMiddleTop = '30px';
-        const horBotTop = '200px';
+        if (game.getWin().col === 0) {
+            vertWinLineDiv.style.left = verticalLeftLeft;
+        }
+        else if (game.getWin().col === 1) {
+            vertWinLineDiv.style.left = verticalMiddleLeft;
+        }
+        else {
+            vertWinLineDiv.style.left = verticalRightLeft;
+        }
 
+        vertWinLineDiv.style.visibility = 'visible';
+    };
+
+    const setDiagonalLine = () => {
+        const diagWinLineDiv = document.querySelector('.diagonal');
+
+        const topLeftDiagonalDeg = 'rotate(-45deg)';
+        const botLeftDiagonalDeg = 'rotate(45deg)';
+
+        if (game.getWin().row === 0) {
+            diagWinLineDiv.style.transform = topLeftDiagonalDeg;
+        }
+        else {
+            diagWinLineDiv.style.transform = botLeftDiagonalDeg;
+        }
+
+        diagWinLineDiv.style.visibility = 'visible';
+    }
+
+    const addWinLine = () => {
         //so 3 types of line
         if (game.getWin().type === 'horizontal') {
-            if (game.getWin().row === 0) {
-                horWinLineDiv.style.top = horTopTop;
-            }
-            else if (game.getWin().row === 1) {
-                horWinLineDiv.style.top = horMiddleTop;
-            }
-            else {
-                horWinLineDiv.style.top = horBotTop;
-            }
-
-            horWinLineDiv.style.visibility = 'visible';
+            setHorizontalLine();
         }
         else if (game.getWin().type === 'vertical') {
-            if (game.getWin().col === 0) {
-                vertWinLineDiv.style.left = verticalLeftLeft;
-            }
-            else if (game.getWin().col === 1) {
-                vertWinLineDiv.style.left = verticalMiddleLeft;
-            }
-            else {
-                vertWinLineDiv.style.left = verticalRightLeft;
-            }
-
-            vertWinLineDiv.style.visibility = 'visible';
+            setVerticalLine();
         }
         else if (game.getWin().type === 'diagonal') {
-            if (game.getWin().row === 0) {
-                diagWinLineDiv.style.transform = topLeftDiagonalDeg;
-            }
-            else {
-                diagWinLineDiv.style.transform = botLeftDiagonalDeg;
-            }
-
-            diagWinLineDiv.style.visibility = 'visible';
+            setDiagonalLine();
         }
         else {
             //tie
