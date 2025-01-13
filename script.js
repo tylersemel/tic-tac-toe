@@ -227,7 +227,7 @@ const Display = (function() {
     const startDialog = document.querySelector('#start-modal');
 
     const start = () => {
-        startDialog.showModal();
+        // startDialog.showModal();
         renderGameboard(game.board);
     }
 
@@ -238,6 +238,7 @@ const Display = (function() {
 
         setPlayerNames(game.getPlayers(), [formData.get('player-one'), formData.get('player-two')]);
         displayPlayers();
+        setTimeout
         startDialog.close();
     });
 

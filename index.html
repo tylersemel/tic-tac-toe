@@ -9,18 +9,18 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <span>TIC TAC TOE</span>
-        </header>
-        <div class="vs">
-            <span class="p1 name">P1</span>
-            <span>vs</span>
-            <span class="p2 name">P2</span>
-        </div>
-        <div class="turn">
-            <span class="name">P</span>
-            <span>'s turn!</span>
-        </div>
+        <section class="sidebar">
+            <div class="vs">
+                <span class="p1 name">P1</span>
+                <span>vs</span>
+                <span class="p2 name">P2</span>
+            </div>
+            <div class="turn">
+                <span class="name">P</span>
+                <span>'s turn!</span>
+            </div>
+            <button class="restart">Restart</button>
+        </section>
         <main>
             <div class="position-container">
                 <div class="game-container">
@@ -56,9 +56,6 @@
                 <div class="tie">It was a tie!</div>
             </div>
         </main>
-        <footer>
-            <button>Restart</button>
-        </footer>
     </div>
     <dialog id="start-modal">
         <form action="" method="POST">
