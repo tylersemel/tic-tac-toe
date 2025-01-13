@@ -60,8 +60,21 @@
             <button>Restart</button>
         </footer>
     </div>
-    <dialog>
-
+    <dialog id="start-modal">
+        <form action="" method="POST">
+            <h1>TIC TAC TOE</h1>
+            <section class="players">
+                <p>
+                    <label for="player-one">PLAYER ONE</label>
+                    <input type="text" id="player-one" name="player-one" autocomplete="off" required>
+                </p>
+                <p>
+                    <label for="player-two">PLAYER TWO</label>
+                    <input type="text" id="player-two" name="player-two" autocomplete="off" required>
+                </p>
+            </section>
+            <button type="submit">Start Game</button>
+        </form>
     </dialog>
 </body>
 </html>

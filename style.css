@@ -78,7 +78,7 @@ main .position-container {
 main .position-container .win {
     position: absolute;
     display: inline-block;
-    width: 30px;
+    width: 20px;
     background-color: rgb(219, 0, 0);
     border-radius: 50px;
     visibility: hidden;
@@ -181,4 +181,35 @@ main .game-container .bottom {
     border-bottom-right-radius: 15px;
 }
 
+#start-modal {
+    background-color: rgb(103, 149, 176);
+    height: 500px;
+    width: 500px;
+    margin: 50px auto;
+    border: none;
+    border-radius: 40px;
+}
 
+::backdrop {
+    background-color: aliceblue;
+    opacity: 0.7;
+}
+
+#start-modal form {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    padding: 10px;
+
+}
+
+#start-modal .players {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#start-modal form h1, form section{
+    padding: 20px;
+}

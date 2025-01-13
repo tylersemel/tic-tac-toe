@@ -94,6 +94,8 @@ function Game() {
     const board = Gameboard();
     let win;
 
+    const getPlayers = () => players;
+
     //if horizontal only need to know row
     //if diagonal need to know start left side row and col
     const setWin = (type, row, col) => {
@@ -214,15 +216,43 @@ function Game() {
 
     start();
 
-    return { board, playRound, getCurrentPlayer, getWin };
+    return { board, playRound, getCurrentPlayer, getWin, getPlayers };
 }
 
 
 const Display = (function() {
     const cellDivs = document.querySelectorAll('.cell');
-    const turnDiv = document.querySelector('.turn');
-    const nameDiv = turnDiv.querySelector('.name');
     const game = Game();
+    const startForm = document.querySelector('form');
+    const startDialog = document.querySelector('#start-modal');
+
+    const start = () => {
+        startDialog.showModal();
+        renderGameboard(game.board);
+    }
+
+    startForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(startForm);
+
+        setPlayerNames(game.getPlayers(), [formData.get('player-one'), formData.get('player-two')]);
+        displayPlayers();
+        startDialog.close();
+    });
+
+    const setPlayerNames = (players, names) => {
+        players[0].setName(names[0]);
+        players[1].setName(names[1]);
+    }
+
+    const displayPlayers = () => {
+        const playerOne = document.querySelector('.p1');
+        const playerTwo = document.querySelector('.p2');
+
+        playerOne.textContent = game.getPlayers()[0].getName();
+        playerTwo.textContent = game.getPlayers()[1].getName();
+    }
 
     const addEvents = () => {
         for (const cell of cellDivs) {
@@ -265,6 +295,8 @@ const Display = (function() {
     };
 
     const renderTurn = (currentPlayer) => {
+        const turnDiv = document.querySelector('.turn');
+        const nameDiv = turnDiv.querySelector('.name');
         nameDiv.textContent = `Player ${currentPlayer.id}`
     };
 
@@ -349,8 +381,7 @@ const Display = (function() {
             
         }
     }
-
-    renderGameboard(game.board);
+    start();
 
     return { game, renderGameboard, renderTurn };
     
