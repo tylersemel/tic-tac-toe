@@ -1,16 +1,3 @@
-//gameboard iife
-//check board space
-//gameboard array
-
-//player
-//player turn
-
-//game 
-//who's turn it is
-//win condition
-
-//i'll place checks later
-
 function Gameboard() {
     const rows = 3;
     const cols = 3;
@@ -83,10 +70,6 @@ function Player(id, symbol) {
     return { id, symbol, color, setName, getName }
 }
 
-function Win(type, row, col) {
-    return { type, row, col }
-}
-
 function Game() {
     let players = [
         Player(1, 'X'),
@@ -100,8 +83,8 @@ function Game() {
 
     //if horizontal only need to know row
     //if diagonal need to know start left side row and col
-    const setWin = (type, row, col) => {
-        win = Win(type, row, col);
+    const setWin = (type, row, col, player) => {
+        win = {type, row, col, player};
     }
 
     const getWin = () => win;
@@ -132,11 +115,12 @@ function Game() {
 
                 if (count === 3) {
                     if (direction === 'horizontal') {
-                        setWin(direction, i, -1);
+                        setWin(direction, i, -1, currentPlayer);
                     }
                     else {
-                        setWin(direction, -1, i);
+                        setWin(direction, -1, i, currentPlayer);
                     }
+                    currentPlayer = players[0];
                     return true;
                 }
 
@@ -227,6 +211,8 @@ const Display = (function() {
     const game = Game();
     const startForm = document.querySelector('form');
     const startDialog = document.querySelector('#start-modal');
+    const restartBtn = document.querySelector('.restart');
+    let winLine;
 
     const start = () => {
         // startDialog.showModal();
@@ -251,8 +237,23 @@ const Display = (function() {
 
         setPlayers(game.getPlayers(), [formData.get('player-one'), formData.get('player-two')]);
         displayPlayers();
-        setTimeout
         startDialog.close();
+    });
+
+    restartBtn.addEventListener('click', (e) => {
+        for (let i = 0; i < game.board.getRows(); i++) {
+            for (let j = 0; j < game.board.getCols(); j++) {
+                game.board.getBoard()[i][j].setSymbol('');
+                renderGameboard(i, j);
+            }
+        }
+
+        if (winLine) {
+            winLine.style.visibility = 'hidden';
+        }
+        removeEvents();
+        addEvents();
+        renderTurn(game.getCurrentPlayer());
     });
 
     const setPlayers = (players, names) => {
@@ -273,6 +274,7 @@ const Display = (function() {
             cell.addEventListener('click', clickCell);
             cell.addEventListener('mouseover', hoverOnCell);
             cell.addEventListener('mouseout', hoverOutCell);
+            cell.style.cursor = 'pointer';
         }
     };
 
@@ -336,7 +338,12 @@ const Display = (function() {
     const displayWin = () => {
         const turnDiv = document.querySelector('.turn');
         const nameDiv = turnDiv.querySelector('.player');
-        nameDiv.textContent = `${game.getCurrentPlayer().getName()} won!`;
+        if (game.getWin().type === 'tie') {
+            nameDiv.textContent = 'It was a tie!';
+        }
+        else {
+            nameDiv.textContent = `${game.getCurrentPlayer().getName()} won!`;
+        }
     };
 
     const renderTurn = (currentPlayer) => {
@@ -366,6 +373,7 @@ const Display = (function() {
         horWinLineDiv.style.visibility = 'visible';
         horWinLineDiv.style.backgroundColor = game.getCurrentPlayer().color;
         horWinLineDiv.style.animation = 'fadeIn 0.5s';
+        winLine = horWinLineDiv;
     };
 
     const setVerticalLine = () => {
@@ -388,6 +396,7 @@ const Display = (function() {
         vertWinLineDiv.style.visibility = 'visible';
         vertWinLineDiv.style.backgroundColor = game.getCurrentPlayer().color;
         vertWinLineDiv.style.animation = 'fadeIn 0.5s';
+        winLine = vertWinLineDiv;
     };
 
     const setDiagonalLine = () => {
@@ -406,6 +415,7 @@ const Display = (function() {
         diagWinLineDiv.style.visibility = 'visible';
         diagWinLineDiv.style.backgroundColor = game.getCurrentPlayer().color;
         diagWinLineDiv.style.animation = 'fadeIn 0.5s';
+        winLine = diagWinLineDiv;
     }
 
     const addWinLine = () => {
@@ -423,7 +433,7 @@ const Display = (function() {
             const tie = document.querySelector('.tie');
 
             tie.style.visibility = 'visible';
-            
+            winLine = tie;
         }
     }
     start();

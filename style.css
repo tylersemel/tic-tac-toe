@@ -142,7 +142,6 @@ header {
 }
 
 .sidebar {
-    /* margin-right: 14rem; */
     width: 500px;
     display: flex;
     flex-direction: column;
@@ -203,9 +202,7 @@ main .game-container {
 }
 
 main .game-container div {
-    /* background-color: rgb(99, 115, 186); */
     display: flex;
-    /* text-align: center; */
     align-items: center;
     justify-content: center;
 }
@@ -226,7 +223,6 @@ main .game-container .cell span {
 }
 
 main .game-container .cell:hover {
-    /* background-color: rgb(204, 232, 238); */
     cursor: pointer;
 }
 
