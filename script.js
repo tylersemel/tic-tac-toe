@@ -343,6 +343,7 @@ const Display = (function() {
         const nameDiv = turnDiv.querySelector('.player');
         if (game.getWin().type === 'tie') {
             nameDiv.textContent = 'It was a tie!';
+            nameDiv.style.color = 'black';
         }
         else {
             console.log(game.getWin().player.getName());
