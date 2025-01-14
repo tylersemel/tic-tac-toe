@@ -119,7 +119,6 @@ function Game() {
 
                 if (count === 3) {
                     if (direction === 'horizontal') {
-                        
                         setWin(direction, i, -1, getCurrentPlayer());
                     }
                     else {
@@ -128,9 +127,7 @@ function Game() {
 
                     return true;
                 }
-
             }
-
             count = 0;
         }
 
@@ -180,13 +177,11 @@ function Game() {
         }
 
         if (checkWin()) {
-            console.log(`Player ${currentPlayer.id} has won!`);
             board.printBoard();
             return true;
         }
 
         if (!(board.getBoard().find(r => r.find(cell => cell.getSymbol() === '')))) {
-            console.log('It was a tie!');
             setWin('tie', -1, -1);
             board.printBoard();
             return true;
@@ -195,7 +190,6 @@ function Game() {
         board.printBoard();
 
         switchCurrentPlayer();
-        console.log(`Player ${getCurrentPlayer().id}'s turn:`);
         return false;
     };
 
@@ -212,15 +206,15 @@ function Game() {
 
 
 const Display = (function() {
-    const cellDivs = document.querySelectorAll('.cell');
     const game = Game();
+    const cellDivs = document.querySelectorAll('.cell');
     const startForm = document.querySelector('form');
     const startDialog = document.querySelector('#start-modal');
     const restartBtn = document.querySelector('.restart');
     let winLine;
 
     const start = () => {
-        // startDialog.showModal();
+        startDialog.showModal();
         attachSpans(game.board);
         displayTurn(game.getCurrentPlayer());
     }
@@ -258,6 +252,7 @@ const Display = (function() {
             winLine.style.visibility = 'hidden';
         }
         if (game.getCurrentPlayer().id !== 1) {
+            //so game always starts with player 1
             game.switchCurrentPlayer();
         }
 
@@ -314,7 +309,6 @@ const Display = (function() {
     }
 
     function clickCell(event) {
-        console.log("clicked a cell " + event.target.getAttribute('data-row'));
         const row = parseInt(event.target.getAttribute('data-row'));
         const col = parseInt(event.target.getAttribute('data-col'));
         if (game.playRound(row, col)) {
@@ -342,7 +336,6 @@ const Display = (function() {
         cellDivs[idx].removeEventListener('mouseover', hoverOnCell);
         cellDivs[idx].removeEventListener('mouseout', hoverOutCell);
         cellDivs[idx].style.cursor = 'default';
-
     };
 
     const displayWin = () => {
@@ -447,8 +440,6 @@ const Display = (function() {
             winLine = tie;
         }
     }
-    start();
 
-    return { game, renderGameboard, displayTurn };
-    
+    start();
 })();
