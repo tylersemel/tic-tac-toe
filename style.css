@@ -126,24 +126,35 @@ main .position-container .tie {
     100% { opacity: 1; }
 }
 
+header {
+    text-align: center;
+    padding: 10px;
+    font-size: 5rem;
+    margin-bottom: -30px;
+}
+
 .container {
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 50px;
+    padding: 20px;
+    gap: 100px;
 }
 
 .sidebar {
-    margin-right: 14rem;
+    /* margin-right: 14rem; */
+    width: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+.name {
+    font-size: 8rem;
+}
+
 .vs {
-    font-size: 150px;
-    
+    font-size: 50px;
 }
 
 .p1 {
@@ -167,6 +178,18 @@ main .position-container .tie {
     border: 4px solid rgb(0, 84, 112);
     border-radius: 10px;
     cursor: pointer;
+    transition: 0.5s;
+}
+
+.restart:hover {
+    background-color: rgb(55, 136, 163);
+}
+
+.restart:active {
+    background-color: rgb(68, 68, 68);
+    border: 4px solid black;
+    transition: 0s;
+    box-shadow: 2px 2px 4px gray;
 }
 
 main .game-container {
@@ -198,8 +221,12 @@ main .game-container .cell {
     font-size: 100px;
 }
 
+main .game-container .cell span {
+    pointer-events: none;
+}
+
 main .game-container .cell:hover {
-    background-color: rgb(204, 232, 238);
+    /* background-color: rgb(204, 232, 238); */
     cursor: pointer;
 }
 

@@ -74,11 +74,13 @@ function Cell() {
 }
 
 function Player(id, symbol) {
+    const color = id === 1 ? 'red' : 'blue';
+
     let name = 'None';
     const setName = (player) => name = player;
     const getName = () => name;
 
-    return { id, symbol, setName, getName }
+    return { id, symbol, color, setName, getName }
 }
 
 function Win(type, row, col) {
@@ -188,15 +190,15 @@ function Game() {
             return false;
         }
 
-        if (!(board.getBoard().find(r => r.find(cell => cell.getSymbol() === '')))) {
-            console.log('It was a tie!');
-            setWin('tie', -1, -1);
+        if (checkWin()) {
+            console.log(`Player ${currentPlayer.id} has won!`);
             board.printBoard();
             return true;
         }
 
-        if (checkWin()) {
-            console.log(`Player ${currentPlayer.id} has won!`);
+        if (!(board.getBoard().find(r => r.find(cell => cell.getSymbol() === '')))) {
+            console.log('It was a tie!');
+            setWin('tie', -1, -1);
             board.printBoard();
             return true;
         }
@@ -228,7 +230,18 @@ const Display = (function() {
 
     const start = () => {
         // startDialog.showModal();
-        renderGameboard(game.board);
+        attachSpans(game.board);
+    }
+
+    const attachSpans = (board) => {
+        let count = 0;
+        for (let i = 0; i < board.getRows(); i++) {
+            for (let j = 0; j < board.getCols(); j++) {
+                let cellSpan = document.createElement('span');
+                cellDivs[count].appendChild(cellSpan);
+                count++;
+            }
+        }
     }
 
     startForm.addEventListener('submit', (event) => {
@@ -236,13 +249,13 @@ const Display = (function() {
 
         const formData = new FormData(startForm);
 
-        setPlayerNames(game.getPlayers(), [formData.get('player-one'), formData.get('player-two')]);
+        setPlayers(game.getPlayers(), [formData.get('player-one'), formData.get('player-two')]);
         displayPlayers();
         setTimeout
         startDialog.close();
     });
 
-    const setPlayerNames = (players, names) => {
+    const setPlayers = (players, names) => {
         players[0].setName(names[0]);
         players[1].setName(names[1]);
     }
@@ -258,10 +271,26 @@ const Display = (function() {
     const addEvents = () => {
         for (const cell of cellDivs) {
             cell.addEventListener('click', clickCell);
+            cell.addEventListener('mouseover', hoverOnCell);
+            cell.addEventListener('mouseout', hoverOutCell);
         }
     };
 
     addEvents();
+
+    function hoverOnCell(event) {
+        let cellSpan = event.target.querySelector('span');
+        cellSpan.textContent = game.getCurrentPlayer().symbol;
+        cellSpan.style.color = game.getCurrentPlayer().color;
+        cellSpan.style.opacity = 0.5;
+    }
+
+    function hoverOutCell(event) {
+        let cellSpan = event.target.querySelector('span');
+        cellSpan.textContent = '';
+        cellSpan.style.color = 'rgb(227, 249, 255)';
+        cellSpan.style.opacity = 1;
+    }
 
     function removeEvents() {
         for (const cell of cellDivs) {
@@ -277,32 +306,41 @@ const Display = (function() {
             removeEvents();
             addWinLine();
         }
-        renderGameboard(game.board);
+        renderGameboard(row, col);
     }
 
-    const renderGameboard = (board) => {
-
+    const renderGameboard = (row, col) => {
         renderTurn(game.getCurrentPlayer());
-        // console.log(cellDivs.length)
-        console.log("will display gameboard array");
-        //not good
-        let count = 0;
-        for (let i = 0; i < board.getRows(); i++) {
-            for (let j = 0; j < board.getCols(); j++) {
-                cellDivs[count].textContent = board.getBoard()[i][j].getSymbol();
-                count++;
-            }
-        }
+        
+        const cell = game.board.getBoard()[row][col];
+        const idx = row * game.board.getRows() + col;
+        const symbol = cell.getSymbol();
+        const cellSpan = cellDivs[idx].querySelector('span');
+
+        cellSpan.textContent = symbol;
+        cellSpan.style.color = symbol === 'X' ? 'red' : 'blue';
+        cellSpan.style.opacity = 1;
+
+        cellDivs[idx].removeEventListener('mouseover', hoverOnCell);
+        cellDivs[idx].removeEventListener('mouseout', hoverOutCell);
+
     };
 
     const renderTurn = (currentPlayer) => {
         const turnDiv = document.querySelector('.turn');
-        const nameDiv = turnDiv.querySelector('.name');
-        nameDiv.textContent = `Player ${currentPlayer.id}`
+        const nameDiv = turnDiv.querySelector('.player');
+        nameDiv.textContent = `Player ${currentPlayer.id}'s turn!`;
+        nameDiv.style.color = currentPlayer.color;
     };
 
     const removeCellHover = () => {
-
+        for (const cell of cellDivs) {
+            if (cell.querySelector('span').textContent === 'X' || 
+                cell.querySelector('span').textContent === 'O') {
+                    cell.removeEventListener('mouseover', hoverOnCell);
+                    cell.removeEventListener('mouseout', hoverOutCell);
+                }
+        }
     };
 
     const setHorizontalLine = () => {
@@ -323,6 +361,7 @@ const Display = (function() {
         }
 
         horWinLineDiv.style.visibility = 'visible';
+        horWinLineDiv.style.backgroundColor = game.getCurrentPlayer().color;
         horWinLineDiv.style.animation = 'fadeIn 0.5s';
     };
 
@@ -344,6 +383,7 @@ const Display = (function() {
         }
 
         vertWinLineDiv.style.visibility = 'visible';
+        vertWinLineDiv.style.backgroundColor = game.getCurrentPlayer().color;
         vertWinLineDiv.style.animation = 'fadeIn 0.5s';
     };
 
@@ -361,6 +401,7 @@ const Display = (function() {
         }
 
         diagWinLineDiv.style.visibility = 'visible';
+        diagWinLineDiv.style.backgroundColor = game.getCurrentPlayer().color;
         diagWinLineDiv.style.animation = 'fadeIn 0.5s';
     }
 
