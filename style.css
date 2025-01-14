@@ -142,18 +142,22 @@ header {
 }
 
 .sidebar {
-    width: 500px;
+    height: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.name {
-    font-size: 8rem;
+    overflow: auto;
 }
 
 .vs {
-    font-size: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 30px;
+}
+
+.name {
+    font-size: 70px;
 }
 
 .p1 {
