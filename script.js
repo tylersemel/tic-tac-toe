@@ -295,6 +295,9 @@ const Display = (function() {
     function removeEvents() {
         for (const cell of cellDivs) {
             cell.removeEventListener('click', clickCell);
+            cell.removeEventListener('mouseover', hoverOnCell);
+            cell.removeEventListener('mouseout', hoverOutCell);
+            cell.style.cursor = 'default';
         }
     }
 
@@ -304,14 +307,17 @@ const Display = (function() {
         const col = parseInt(event.target.getAttribute('data-col'));
         if (game.playRound(row, col)) {
             removeEvents();
+            displayWin();
             addWinLine();
         }
+        else {
+            renderTurn(game.getCurrentPlayer());
+        }
+
         renderGameboard(row, col);
     }
 
-    const renderGameboard = (row, col) => {
-        renderTurn(game.getCurrentPlayer());
-        
+    const renderGameboard = (row, col) => {        
         const cell = game.board.getBoard()[row][col];
         const idx = row * game.board.getRows() + col;
         const symbol = cell.getSymbol();
@@ -323,7 +329,14 @@ const Display = (function() {
 
         cellDivs[idx].removeEventListener('mouseover', hoverOnCell);
         cellDivs[idx].removeEventListener('mouseout', hoverOutCell);
+        cellDivs[idx].style.cursor = 'default';
 
+    };
+
+    const displayWin = () => {
+        const turnDiv = document.querySelector('.turn');
+        const nameDiv = turnDiv.querySelector('.player');
+        nameDiv.textContent = `${game.getCurrentPlayer().getName()} won!`;
     };
 
     const renderTurn = (currentPlayer) => {
@@ -331,16 +344,6 @@ const Display = (function() {
         const nameDiv = turnDiv.querySelector('.player');
         nameDiv.textContent = `Player ${currentPlayer.id}'s turn!`;
         nameDiv.style.color = currentPlayer.color;
-    };
-
-    const removeCellHover = () => {
-        for (const cell of cellDivs) {
-            if (cell.querySelector('span').textContent === 'X' || 
-                cell.querySelector('span').textContent === 'O') {
-                    cell.removeEventListener('mouseover', hoverOnCell);
-                    cell.removeEventListener('mouseout', hoverOutCell);
-                }
-        }
     };
 
     const setHorizontalLine = () => {
