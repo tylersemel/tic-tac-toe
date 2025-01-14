@@ -88,20 +88,20 @@ main .position-container .win {
 main .position-container .diagonal {
     height: 560px;
     top: -20px;
-    left: 240px;
+    left: 250px;
     transform: rotate(-45deg);
 }
 
 main .position-container .vertical {
     height: 450px;
     top: 30px;
-    left: 240px;
+    left: 75px;
 }
 
 main .position-container .horizontal {
     height: 450px;
-    top: 30px;
-    left: 240px;
+    top: 200px;
+    left: 245px;
     transform: rotate(90deg);
 }
 

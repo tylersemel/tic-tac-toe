@@ -390,9 +390,9 @@ const Display = (function() {
     const setVerticalLine = () => {
         const vertWinLineDiv = document.querySelector('.vertical');
 
-        const verticalLeftLeft = '70px';
-        const verticalMiddleLeft = '240px';
-        const verticalRightLeft = '410px';
+        const verticalLeftLeft = '75px';
+        const verticalMiddleLeft = '245px';
+        const verticalRightLeft = '415px';
 
         if (game.getWin().col === 0) {
             vertWinLineDiv.style.left = verticalLeftLeft;
