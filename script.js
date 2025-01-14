@@ -67,7 +67,11 @@ function Player(id, symbol) {
     const setName = (player) => name = player;
     const getName = () => name;
 
-    return { id, symbol, color, setName, getName }
+    return { id, symbol, color, setName, getName };
+}
+
+function Win(type, row, col, player) {
+    return { type, row, col, player };
 }
 
 function Game() {
@@ -84,7 +88,7 @@ function Game() {
     //if horizontal only need to know row
     //if diagonal need to know start left side row and col
     const setWin = (type, row, col, player) => {
-        win = {type, row, col, player};
+        win = Win(type, row, col, player);
     }
 
     const getWin = () => win;
@@ -115,12 +119,13 @@ function Game() {
 
                 if (count === 3) {
                     if (direction === 'horizontal') {
-                        setWin(direction, i, -1, currentPlayer);
+                        
+                        setWin(direction, i, -1, getCurrentPlayer());
                     }
                     else {
-                        setWin(direction, -1, i, currentPlayer);
+                        setWin(direction, -1, i, getCurrentPlayer());
                     }
-                    currentPlayer = players[0];
+
                     return true;
                 }
 
@@ -134,11 +139,11 @@ function Game() {
 
     const checkDiagonal = () => {
         if (board.getBoard()[0][0].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][2].getSymbol() === getCurrentPlayer().symbol) {
-            setWin('diagonal', 0, 0);
+            setWin('diagonal', 0, 0, getCurrentPlayer());
             return true;
         }
         else if (board.getBoard()[0][2].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[1][1].getSymbol() === getCurrentPlayer().symbol && board.getBoard()[2][0].getSymbol() === getCurrentPlayer().symbol) {
-            setWin('diagonal', 2, 0);
+            setWin('diagonal', 2, 0, getCurrentPlayer());
             return true;
         }
         
@@ -202,7 +207,7 @@ function Game() {
 
     start();
 
-    return { board, playRound, getCurrentPlayer, getWin, getPlayers };
+    return { board, playRound, getCurrentPlayer, getWin, getPlayers, switchCurrentPlayer };
 }
 
 
@@ -217,6 +222,7 @@ const Display = (function() {
     const start = () => {
         // startDialog.showModal();
         attachSpans(game.board);
+        displayTurn(game.getCurrentPlayer());
     }
 
     const attachSpans = (board) => {
@@ -251,9 +257,13 @@ const Display = (function() {
         if (winLine) {
             winLine.style.visibility = 'hidden';
         }
+        if (game.getCurrentPlayer().id !== 1) {
+            game.switchCurrentPlayer();
+        }
+
         removeEvents();
         addEvents();
-        renderTurn(game.getCurrentPlayer());
+        displayTurn(game.getCurrentPlayer());
     });
 
     const setPlayers = (players, names) => {
@@ -308,12 +318,12 @@ const Display = (function() {
         const row = parseInt(event.target.getAttribute('data-row'));
         const col = parseInt(event.target.getAttribute('data-col'));
         if (game.playRound(row, col)) {
-            removeEvents();
             displayWin();
             addWinLine();
+            removeEvents();
         }
         else {
-            renderTurn(game.getCurrentPlayer());
+            displayTurn(game.getCurrentPlayer());
         }
 
         renderGameboard(row, col);
@@ -342,11 +352,12 @@ const Display = (function() {
             nameDiv.textContent = 'It was a tie!';
         }
         else {
-            nameDiv.textContent = `${game.getCurrentPlayer().getName()} won!`;
+            console.log(game.getWin().player.getName());
+            nameDiv.textContent = `${game.getWin().player.getName()} won!`;
         }
     };
 
-    const renderTurn = (currentPlayer) => {
+    const displayTurn = (currentPlayer) => {
         const turnDiv = document.querySelector('.turn');
         const nameDiv = turnDiv.querySelector('.player');
         nameDiv.textContent = `Player ${currentPlayer.id}'s turn!`;
@@ -413,7 +424,7 @@ const Display = (function() {
         }
 
         diagWinLineDiv.style.visibility = 'visible';
-        diagWinLineDiv.style.backgroundColor = game.getCurrentPlayer().color;
+        diagWinLineDiv.style.backgroundColor = game.getWin().player.color;
         diagWinLineDiv.style.animation = 'fadeIn 0.5s';
         winLine = diagWinLineDiv;
     }
@@ -438,6 +449,6 @@ const Display = (function() {
     }
     start();
 
-    return { game, renderGameboard, renderTurn };
+    return { game, renderGameboard, displayTurn };
     
 })();
